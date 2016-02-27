@@ -2,9 +2,8 @@ import sqlite3
 import json
 import requests
 
-
 def create_db(db="users.db"):
-    connection = sqlite3.connect(DB_FILE)
+    connection = sqlite3.connect(db)
     c = connection.cursor()
     c.execute('''CREATE TABLE users (
                     id INTEGER PRIMARY KEY,
@@ -13,7 +12,6 @@ def create_db(db="users.db"):
                     company TEXT,
                     email TEXT,
                     phone TEXT,
-                    country TEXT,
                     latitude NUMBER,
                     longitude NUMBER)''')
 
@@ -26,8 +24,6 @@ def create_db(db="users.db"):
 
 #def populate_users(db="users.db"):
 
-
-
 def isolate_user_info():
     JSON_FILE = requests.get("https://htn-interviews.firebaseio.com/users.json").json()
     userarray = []
@@ -37,4 +33,4 @@ def isolate_user_info():
                         user["country"], user["latitude"], user["longitude"])
     return userarray
 
-isolate_user_info()
+#isolate_user_info()
