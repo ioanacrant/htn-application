@@ -22,15 +22,20 @@ def create_db(db="users.db"):
                     rating NUMBER,
                     FOREIGN KEY (user_id) REFERENCES users(id))''')
 
-#def populate_users(db="users.db"):
+def populate_users(db="users.db"):
+    connection = sqlite3.connect(db)
+    c = connection.cursor()
+
+    userinfo = isolate_user_info()
+    for userkeys in userinfo:
+        c.execute("INSERT INTO users VALUES(?,?,?,?,?,?,?,?)", userkeys)
+    connection.commit()
 
 def isolate_user_info():
     JSON_FILE = requests.get("https://htn-interviews.firebaseio.com/users.json").json()
     userarray = []
-    for user in JSON_FILE:
-        print(user)
-        userarray.append(user["name"], user["picture"],user["company"], user["email"], user["phone"],
-                        user["country"], user["latitude"], user["longitude"])
+    for i in range(len(JSON_FILE)):
+        user = JSON_FILE[i]
+        userarray.append([i+1,user["name"], user["picture"],user["company"], user["email"], user["phone"],
+                        user["latitude"], user["longitude"]])
     return userarray
-
-#isolate_user_info()
