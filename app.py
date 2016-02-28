@@ -17,14 +17,26 @@ def show_users():
 
     return json.dumps(users)
 
-@app.route("/users/<int:user_id>", methods=["GET", "POST"])
+@app.route("/users/<int:user_id>", methods=["GET", "PUT"])
 def show_user(user_id):
     if request.method == 'GET':
         user = query_db("SELECT * FROM users WHERE id=?", [user_id])[0]
         skills = query_db("SELECT * FROM skills WHERE user_id=?",[user_id], 2)
         user["skills"]=skills
-
         return json.dumps(user)
+
+    else:
+        req = request.get_json()
+        user = query_db("SELECT * FROM users WHERE id=?", [user_id])[0]
+        for key in req:
+            if key in ["name", "picture", "company", "email", "phone", "latitude", "longitude"]:
+                user[key]= req[key]
+        g.db.execute("UPDATE users SET name=?, picture=?, company=?, email=?, phone=?, latitude=?, longitude=? WHERE id=?",
+                    [user["name"], user["picture"], user["company"], user["email"], user["phone"], user["latitude"], user["longitude"], user_id])
+        newuser = query_db("SELECT * FROM users WHERE id=?", [user_id])[0]
+        skills = query_db("SELECT * FROM skills WHERE user_id=?",[user_id], 2)
+        newuser["skills"]=skills
+        return json.dumps(newuser)
 
 @app.before_request             #found on sql site
 def before_request():
