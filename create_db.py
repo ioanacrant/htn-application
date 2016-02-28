@@ -21,6 +21,7 @@ def create_db(db="users.db"):
                     name TEXT,
                     rating NUMBER,
                     FOREIGN KEY (user_id) REFERENCES users(id))''')
+    connection.close()
 
 def populate_users(db="users.db"):
     connection = sqlite3.connect(db)
@@ -30,6 +31,7 @@ def populate_users(db="users.db"):
     for userkeys in userinfo:
         c.execute("INSERT INTO users VALUES(?,?,?,?,?,?,?,?)", userkeys)
     connection.commit()
+    connection.close()
 
 def populate_skills(db="users.db"):
     connection = sqlite3.connect(db)
@@ -39,6 +41,7 @@ def populate_skills(db="users.db"):
     for skillkeys in skillsinfo:
         c.execute("INSERT INTO skills VALUES(?,?,?,?)", skillkeys)
     connection.commit()
+    connection.close()
 
 def isolate_user_info():
     JSON_FILE = requests.get("https://htn-interviews.firebaseio.com/users.json").json()
@@ -60,5 +63,3 @@ def isolate_skills_info():
             skillsarray.append([skillidCount, userid+1, user["skills"][j]["name"], user["skills"][j]["rating"]])
             skillidCount+=1
     return skillsarray
-
-populate_skills()
